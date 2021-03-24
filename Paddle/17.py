@@ -13,3 +13,5 @@ c0 = torch.rand(2, 3, 10)
 output, (hn, cn) = rnn(input, (h0, c0))
 
 # print(output)
+
+print(783/26)

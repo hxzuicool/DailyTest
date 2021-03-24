@@ -4,6 +4,10 @@ import torch.optim as optim
 import torchvision
 from torchvision import transforms
 import time
+import numpy as np
+
+
+torch.set_printoptions(threshold=np.inf)
 
 
 class Rnn(nn.Module):
@@ -20,6 +24,7 @@ class Rnn(nn.Module):
         # 此时可以从out中获得最终输出的状态h
         # x = out[:, -1, :]
         x = h_n[-1, :, :]  # -1是取最后一层lstm的输出，out和h_n是一样的。
+        # print(x)
         x = self.classifier(x)
         return x
 
@@ -72,7 +77,7 @@ def train(epoch):
 def test(epoch):
     print('\nEpoch: %d' % epoch)
     global best_acc
-    net.eval()
+    net.eval()  # 测试模式
     test_loss = 0
     correct = 0
     total = 0

@@ -3,13 +3,19 @@ import os
 
 
 def save_img():
-    video_path = './Video/'
+    video_path = 'E:\DataSets\Video'
     videos = os.listdir(video_path)
     for video_name in videos:
+        if not os.path.isfile(video_path + '/' + video_name):
+            continue
+
         file_name = video_name.split('.')[0]
-        folder_name = video_path + file_name
+        # if os.path.exists(video_path + '/' + file_name):
+        #     continue
+
+        folder_name = video_path + '\\' + file_name
         os.makedirs(folder_name, exist_ok=True)
-        vc = cv2.VideoCapture(video_path + video_name)  # 读入视频文件
+        vc = cv2.VideoCapture(video_path + '\\' + video_name)  # 读入视频文件
         c = 0
         rval = vc.isOpened()
 
