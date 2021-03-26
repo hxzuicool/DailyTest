@@ -9,12 +9,12 @@ def copyFile(fileDir, tarDir, moveNum):
     moveFiles = random.sample(filePath, moveNum)
     print(moveFiles)
     for name in moveFiles:
-        shutil.copyfile(fileDir + name, tarDir + name)
+        shutil.copyfile(fileDir + '\\' + name, tarDir + '\\' + name)
         print(name)
 
 
 if __name__ == '__main__':
-    fileDir = 'E:\DataSets\CelebA_Spoof\Data\\new_train\live\\'
-    tarDir = 'G:\\train\live\\'
+    fileDir = r'E:\DataSets\CelebA_Spoof\New_Data\\new_train\live'
+    tarDir = r'E:\DataSets\CelebA_Spoof\New_Data\\test\live'
 
-    copyFile(fileDir, tarDir, 15000)
+    copyFile(fileDir, tarDir, 5000)
