@@ -24,12 +24,8 @@ class Net01(nn.Module):
         self.dropout1 = nn.Dropout(0.5)
 
         self.linear1 = nn.Linear(18 * 108 * 108, 1024)
-
-        self.dropout2 = nn.Dropout(0.1)
-
         self.linear2 = nn.Linear(1024, 128)
-        self.linear3 = nn.Linear(128, 16)
-        self.linear4 = nn.Linear(16, 2)
+        self.linear3 = nn.Linear(128, 2)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -39,10 +35,8 @@ class Net01(nn.Module):
         x = self.dropout1(x)
         x = x.view(-1, 18 * 108 * 108)  # 相当于np.reshape()，-1表示适应层数，层数由列数决定。
         x = self.linear1(F.relu(x))
-        x = self.dropout2(x)
         x = self.linear2(F.relu(x))
         x = self.linear3(F.relu(x))
-        x = self.linear4(F.relu(x))
 
         return x
 
@@ -59,7 +53,7 @@ class CNNNet(nn.Module):
         self.conv3 = nn.Conv2d(16, 16, 3)
 
         # self.pool2 = nn.MaxPool2d(2, 2)
-        self.dropout = nn.Dropout(0.3)
+        self.dropout = nn.Dropout(0.5)
 
         self.fc1 = nn.Linear(16 * 108 * 108, 512)  # 全连接层
 
@@ -103,14 +97,14 @@ transform = transforms.Compose([
                          [0.229, 0.224, 0.225])  # 图像标准化处理
 ])
 
-# trainset = datasets.ImageFolder('E:\\DataSets\\CelebA_Spoof\\New_Data\\new_train', transform=transform)
-# dataloader = torch.utils.data.DataLoader(trainset, batch_size=120, shuffle=True, num_workers=2)
+trainset = datasets.ImageFolder('E:\\DataSets\\CelebA_Spoof\\New_Data\\new_train', transform=transform)
+dataloader = torch.utils.data.DataLoader(trainset, batch_size=120, shuffle=True, num_workers=3)
+# testset = datasets.ImageFolder(r'E:\DataSets\CelebA_Spoof\New_Data\new_test', transform=transform)
+# testloader = torch.utils.data.DataLoader(testset, batch_size=120, shuffle=True, num_workers=6)
+print(len(dataloader))
 
-testset = datasets.ImageFolder(r'E:\DataSets\CelebA_Spoof\New_Data\new_test', transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=120, shuffle=True, num_workers=6)
-# print(len(dataloader))
-print(len(testloader))
 
+# print(len(testloader))
 
 
 # optimizer = optim.SGD(CNNNet.parameters(), lr=0.1, momentum=0.9)
@@ -130,6 +124,7 @@ def dataTrain():
             lr /= 2
             optimizer = optim.SGD(net.parameters(), lr=lr, momentum=0.9)
         inputs, targets = inputs.to('cpu'), targets.to('cpu')
+        print(inputs.shape, targets.shape)
         optimizer.zero_grad()
         output = net(inputs)
         loss = criterion(output, targets)
@@ -143,7 +138,7 @@ def dataTrain():
 
         print(batch_idx, len(dataloader),
               'Loss: %.3f | Acc: %.3f%% (%d/%d)' % (
-              train_loss / (batch_idx + 1), 100. * correct / total, correct, total),
+                  train_loss / (batch_idx + 1), 100. * correct / total, correct, total),
               'lr: %.8f' % lr,
               ' time spent: %.4f ' % (time.time() - startTime))
 
@@ -159,7 +154,7 @@ def showImg():
 
 
 def MobileNetV2_Train():
-    MobileNetV2 = torchvision.models.MobileNetV2(2)
+    MobileNetV2 = torchvision.models.MobileNetV2(num_classes=2)
     optimizer1 = optim.SGD(MobileNetV2.parameters(), 0.1, momentum=0.9)
     train_loss = 0
     total = 0
@@ -205,11 +200,12 @@ def test():
 
 
 if __name__ == '__main__':
-    net = torch.load('../model/CNN_face_anti_spoofing.pt')
-    net = net.to('cpu')
+    # net = torch.load('../model/CNN_face_anti_spoofing.pt')
+    # net = net.to('cpu')
     criterion = nn.CrossEntropyLoss()  # 定义损失函数
 
-    # dataTrain()
     # torch.save(net, '../model/CNN_face_anti_spoofing.pt')
-
-    test()
+    # net01 = torchvision.models.VGG()
+    net = Net01()
+    net = net.to('cpu')
+    dataTrain()
