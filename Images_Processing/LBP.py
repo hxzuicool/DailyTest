@@ -13,7 +13,7 @@ radius = 1  # LBP算法中范围半径的取值
 n_points = 8 * radius  # 领域像素点数
 
 # 读取图像
-image_1 = cv2.imread(r'..\images\Tom_Cruise.jpg', 0)
+image_1 = cv2.imread(r'..\images\Tom_Cruise.jpg')
 image_0 = cv2.imread(r'../images/001450.jpg_crop.jpg')
 
 
@@ -73,35 +73,35 @@ def histogram(img):
 
 def image_hist(image):
     color = ('Y', 'Cb', 'Cr')
-    print(image)
+    # print(image)
     for i, color in enumerate(color):  # 绘制每一个颜色对应的直方图，从容器中进行迭代
         hist = cv2.calcHist([image], [i], None, [256], [0, 256])
-        plt.subplot(1, 3, i+1)
+        plt.subplot(1, 3, i + 1)
         plt.plot(hist)
         plt.xlim([0, 256])
     plt.show()
 
 
+def histogram_all(img):
+    for i in range(3):
+        img_lbp = LBP(cv2.split(img)[i]).astype(np.uint8)
+        calc_hist = cv2.calcHist([img_lbp], [0], None, [256], [0, 256])
+        # max_bins = int(img_lbp.max() + 1)
+        # # hist size:256
+        # hist_local, _ = np.histogram(img_lbp, density=True, bins=max_bins, range=(0, max_bins))
+        for j in range(len(calc_hist)):
+            hist[i*256 + j][0] = calc_hist[j]
+    plt.plot(hist)
+    plt.xlim([0, 256*3])
+    # plt.imshow(calc_hist)
+    # plt.hist(img.ravel(), 255, [0, 255], color='black')
+    # plt.axis('off')
+    plt.show()
+
+
 if __name__ == '__main__':
-    img = showYCbCr(image_0)
-    # img_lbp = LBP(img)
-    # histogram(img_lbp.astype(np.uint8))
-    # plt.imshow(img_lbp, cmap='gray')
-    # plt.show()
-    # cv2.imwrite('../images/001450_Cr_LBP.jpg', img_lbp)
-    # image_hist(img)
-
-    # Y, Cb, Cr = cv2.split(img)
-    # YCbCr = (Y, Cb, Cr)
-    # plt.figure(figsize=(15, 4))
-    # for i, img_YCbCr in enumerate(YCbCr):
-    #     lbp_img = local_binary_pattern(img_YCbCr, n_points, radius)
-    #     calc_hist = cv2.calcHist([lbp_img.astype(np.uint8)], [0], None, [256], [0, 255])
-    #     plt.subplot(1, 3, i+1)
-    #     plt.plot(calc_hist)
-    #     plt.xlim([0, 255])
-    #     plt.axis('off')
-    #
-    # plt.show()
-
-    histogram(LBP(cv2.cvtColor(image_0, cv2.COLOR_BGR2GRAY)).astype(np.uint8))
+    # img = showYCbCr(image_0)
+    img = cv2.cvtColor(image_1, cv2.COLOR_BGR2HSV)
+    print(img.shape)
+    hist = np.zeros((256 * 3, 1))
+    image_hist(img)

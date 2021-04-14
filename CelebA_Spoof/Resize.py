@@ -15,7 +15,7 @@ def resize_image(filepath, tarpath, filename, height_dst, width_dst):
 
 
 if __name__ == '__main__':
-    filepath = r'E:\DataSets\CelebA_Spoof\New_Data\face_region_random_resize\test\spoof'
+    filepath = r'F:\Datasets\face_region_random_resize\train\live'
     tarpath = filepath  # resize的图片保存在原文件夹
     listdir = os.listdir(filepath)
     for i in range(len(listdir)):
