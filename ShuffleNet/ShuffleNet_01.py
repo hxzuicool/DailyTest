@@ -2,8 +2,24 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
+import torchvision
+import torchvision.transforms as transforms
+import numpy as np
+import time
 
 dtype = torch.FloatTensor
+
+trans = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Resize((256, 256)),
+    transforms.RandomHorizontalFlip()
+])
+
+# batch_size = 125
+# train_image_folder = torchvision.datasets.ImageFolder(
+#     r'E:\DataSets\CelebA_Spoof\New_Data\train',
+#     transform=trans)
+# train_data_loader = torch.utils.data.DataLoader(train_image_folder, batch_size=batch_size, shuffle=True)
 
 
 def shuffle_channels(x, groups):
@@ -91,9 +107,10 @@ class ShuffleNetUnitB(nn.Module):
 class ShuffleNet(nn.Module):
     """ShuffleNet for groups=3"""
 
-    def __init__(self, groups=3, in_channels=3, num_classes=1000):
+    def __init__(self, groups=3, in_channels=4, num_classes=2):
         super(ShuffleNet, self).__init__()
 
+        self.groups = groups
         self.conv1 = nn.Conv2d(in_channels, 24, 3, stride=2, padding=1)
         stage2_seq = [ShuffleNetUnitB(24, 240, groups=3)] + \
                      [ShuffleNetUnitA(240, 240, groups=3) for i in range(3)]
@@ -120,9 +137,43 @@ class ShuffleNet(nn.Module):
 
 
 if __name__ == "__main__":
-    x = Variable(torch.randn([32, 3, 224, 224]).type(dtype),
+    x = Variable(torch.randn([32, 4, 224, 224]).type(dtype),
                  requires_grad=False)
+
     shuffleNet = ShuffleNet()
     out = shuffleNet(x)
     print(out)
-    print(out.size())
+    # train_loss = 0
+    # total = 0
+    # correct = 0
+    # lr = 0.01
+    #
+    # criterion = nn.CrossEntropyLoss()
+    # shuffleNet = ShuffleNet()
+    # shuffleNet.train()
+    # optim_sgd = torch.optim.SGD(shuffleNet.parameters(), lr=lr, momentum=0.9)
+    #
+    # for epoch in range(10):
+    #     for batch_id, (images, labels) in enumerate(train_data_loader):
+    #         startTime = time.time()
+    #
+    #         output = shuffleNet(images)
+    #         loss = criterion(output, labels)
+    #
+    #         optim_sgd.zero_grad()
+    #         loss.backward()
+    #         optim_sgd.step()
+    #
+    #         train_loss += loss.item()
+    #         _, predicted = output.max(1)
+    #         total += labels.size(0)
+    #         correct += predicted.eq(labels).sum().item()
+    #
+    #         print(batch_id, len(train_data_loader),
+    #               'Loss: %.3f | Acc: %.3f%% (%d/%d)' % (
+    #                   train_loss / (batch_id + 1), 100. * correct / total, correct, total),
+    #               'lr: %.4f' % lr,
+    #               ' time spent: %.4f   epoch: %d' % (time.time() - startTime, epoch))
+    #
+    #     torch.save(model.state_dict(), r'.\ShuffleNet_local.pkl')
+    # torch.save(model.state_dict(), r'.\ShuffleNet_all.pkl')

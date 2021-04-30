@@ -71,7 +71,7 @@ def histogram(img):
     plt.show()
 
 
-def image_hist(image):
+def image_hist_cv2(image):
     color = ('Y', 'Cb', 'Cr')
     # print(image)
     for i, color in enumerate(color):  # 绘制每一个颜色对应的直方图，从容器中进行迭代
@@ -79,6 +79,19 @@ def image_hist(image):
         plt.subplot(1, 3, i + 1)
         plt.plot(hist)
         plt.xlim([0, 256])
+    plt.show()
+
+
+def image_hist_np(image):
+    image_channel = cv2.split(image)
+    for i, color in enumerate(image_channel):
+        img_lbp = LBP(image_channel[i])
+        max_bins = int(img_lbp.max() + 1)
+        hist_local, _ = np.histogram(img_lbp, density=True, bins=max_bins, range=(0, max_bins))
+        plt.subplot(1, 3, i + 1)
+        plt.plot(hist_local, color='black')
+        plt.xlim([0, 256])
+        plt.axis('off')
     plt.show()
 
 
@@ -90,9 +103,9 @@ def histogram_all(img):
         # # hist size:256
         # hist_local, _ = np.histogram(img_lbp, density=True, bins=max_bins, range=(0, max_bins))
         for j in range(len(calc_hist)):
-            hist[i*256 + j][0] = calc_hist[j]
-    plt.plot(hist)
-    plt.xlim([0, 256*3])
+            hist[i * 256 + j][0] = calc_hist[j]
+    plt.plot(hist, color='black')
+    plt.xlim([0, 256 * 3])
     # plt.imshow(calc_hist)
     # plt.hist(img.ravel(), 255, [0, 255], color='black')
     # plt.axis('off')
@@ -102,6 +115,22 @@ def histogram_all(img):
 if __name__ == '__main__':
     # img = showYCbCr(image_0)
     img = cv2.cvtColor(image_1, cv2.COLOR_BGR2HSV)
-    print(img.shape)
     hist = np.zeros((256 * 3, 1))
-    image_hist(img)
+    # image_hist(img)
+
+    bgr = cv2.imread('../images/env/000897_face.jpg')
+    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+    hsv = cv2.cvtColor(bgr, cv2.COLOR_BGR2HSV)
+
+    h, s, v = cv2.split(hsv)
+
+    hist_ = np.zeros(256 * 3)
+    for i, color in enumerate(cv2.split(hsv)):
+        img_lbp = LBP(cv2.split(hsv)[i])
+        max_bins = int(img_lbp.max() + 1)
+        hist_local, _ = np.histogram(img_lbp, density=True, bins=max_bins, range=(0, max_bins))
+        hist_[256 * i:(i + 1) * 256] = hist_local
+    plt.plot(hist_, color='black')
+    plt.xlim([0, 256 * 3])
+    plt.axis('off')
+    plt.show()

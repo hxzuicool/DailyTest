@@ -97,7 +97,7 @@ transform = transforms.Compose([
                          [0.229, 0.224, 0.225])  # 图像标准化处理
 ])
 
-trainset = datasets.ImageFolder('E:\\DataSets\\CelebA_Spoof\\New_Data\\new_train', transform=transform)
+trainset = datasets.ImageFolder(r'F:\Datasets\face_region\train_datasets', transform=transform)
 dataloader = torch.utils.data.DataLoader(trainset, batch_size=120, shuffle=True, num_workers=3)
 # testset = datasets.ImageFolder(r'E:\DataSets\CelebA_Spoof\New_Data\new_test', transform=transform)
 # testloader = torch.utils.data.DataLoader(testset, batch_size=120, shuffle=True, num_workers=6)

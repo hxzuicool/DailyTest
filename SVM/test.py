@@ -1,11 +1,29 @@
+import os
+import sklearn
 import numpy as np
-import time
-import cv2
-import matplotlib.pyplot as plt
 from skimage import feature as skif
-
+from skimage import io, transform
+import random
+from sklearn.svm import SVC
+import cv2
+import torch
+import torchvision
+from torchvision import datasets
+import matplotlib.pyplot as plt
+import torchvision.transforms as transforms
+import time
+import joblib
+from sklearn import preprocessing
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+import dlib
 
 if __name__ == '__main__':
+
+    model = joblib.load('../model/sklearn_model/best_acc_hsv.pkl')
+    params = SVC.get_params(model)
+    print(params)
+
     fake = cv2.imread('../images/Tom_Cruise_00.jpg', 0)
     image_bgr = cv2.imread('../images/Tom_Cruise.jpg')
     image_gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
